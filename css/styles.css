@@ -1,0 +1,20 @@
+.hidden {
+    display:none !important;
+}
+.ninja-input {
+    display:inline-block;
+    border:0;
+    padding:0;
+    outline:none;
+    margin:0 24px 0 0;
+}
+#controller{
+  display:block;
+}
+.row{
+    margin-bottom:0;
+}
+ul{
+    margin-top:5px;
+    margin-bottom:5px;
+}

@@ -1,0 +1,195 @@
+﻿
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv=X-UA-Compatible content="IE=edge">
+    <meta name=viewport content="width=device-width,initial-scale=1">
+    <title>API Data Fetcher</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="node_modules/materialize-css/dist/css/materialize.css" />
+    <link rel="stylesheet" type="text/css" href="//ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="css/styles.css" />
+</head>
+<body>
+  <div class="row">
+    <form class="col s12">
+      <div class="row" style="max-width:800px">
+        <div class="input-field col s3">
+          <select id="controller">
+            <!-- Typically this would be scraped from the API's documentation -->
+            <option value="">None</option>
+            <option value="people">People</option>
+            <option value="planets">Planets</option>
+            <option value="starships">Starships</option>
+            <option value="Other">Other</option>
+          </select>
+          <input class="ninja-input hidden" type="text"/>
+        </div>
+        <div class="input-field col s3">
+          <input id="parameters" type="text" class="validate">
+          <label for="parameters">Parameters</label>
+        </div>
+        <div class="input-field col s3">
+            <a class="waves-effect waves-light btn" id="fetch">Fetch<i class="material-icons right">send</i></a>
+        </div>
+        <div class="input-field col s3">
+          <a class="waves-effect waves-light btn" id="download">Save<i class="material-icons right">system_update_alt</i></a>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="row" style="max-width:800px">
+    <div class="col s12" id="parameter_list"><!--Typically, on $("#controller") change, scrape list of available endpoints for parameter lists--></div>
+  </div>
+  <div class="row">
+    <div class="col s12">
+        <div id="jsontotable-obj" class="jsontotable"></div>
+    </div>
+  </div>
+    <script type="text/javascript" src="dist/jquery-1.10.2.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="node_modules/materialize-css/dist/js/materialize.min.js"></script>
+    <script type="text/javascript" src="dist/jquery.jsontotable.js"></script>
+    <script type="text/javascript" src="js/npm_bundle.js"></script>
+    <script>
+        $(document).ready(function() {
+            var json_data;
+            var csv_data;
+            fetchControllers();
+            function fetchData(){
+                var preloader = "<div class=\"preloader-wrapper small active\">"
+                                    + "<div class=\"spinner-layer spinner-green-only\">"
+                                        + "<div class=\"circle-clipper left\">"
+                                            + "<div class=\"circle\"></div>"
+                                            + "</div><div class=\"gap-patch\">"
+                                            + "<div class=\"circle\"></div>"
+                                            + "</div><div class=\"circle-clipper right\">"
+                                            + "<div class=\"circle\"></div>"
+                                          + "</div>"
+                                        + "</div>"
+                                      + "</div>";
+                          $("#jsontotable-obj").html(preloader);
+                $.ajax({
+                        type:"GET",
+                        // http://pokeapi.co/api/v2/
+                        url: "http://swapi.co/api/" + getControllerValue() + "/" + $("#parameters").val(),
+                        dataType: "json",
+                        
+                })
+                .done(function(data) {
+                    json_data = data;
+                    $.jsontotable(data, { id: "#jsontotable-obj", className: "striped highlight", header: true, flatten:true, nesting:true });
+                })
+                .fail(function() {
+                    var message = "Unable to load data";
+                    $("#jsontotable-obj").html(message);
+                    json_data = {"message": message}
+                })
+                .always(function () {
+                    $("#jsontotable-obj .preloader-wrapper").remove();
+                });
+            }
+            function getControllerValue(){
+              if($(".ninja-input").hasClass("hidden")){
+                return $("#controller").val();
+              }
+              else{
+                return $(".ninja-input").val();
+              }
+            }
+            function fetchControllers(){
+                //Execute your own scraping script to scrape your API's documentation
+                return false;
+                // $.ajax({
+                //         type:"GET",
+                //         url: "scrape.aspx?target=controllers",
+                //         dataType: "json",
+                        
+                // })
+                // .done(function(data) {
+                //     var result = "";
+                //     result += "<option value=\"\">None</option>";
+                //     for(var i in data){
+                //       result += "<option value=\"" + data[i] + "\">" + data[i] + "</option>";
+                //     }
+                //     result += "<option value=\"Other\">Other</option>";
+                //     $('#controller').html(result);
+                // })
+                // .fail(function() {
+                //     var result = "Unable to fetch controllers";
+                //     $('#controller').html("<option>" + result + "</option>");
+                //     console.log(result);
+                // });
+            }
+            function fetchParameters(controller){
+                //Execute your own scraping script to scrape your API's documentation
+                return false;
+                // $.ajax({
+                //         type:"GET",
+                //         url: "scrape.aspx?target=parameters&controller=" + controller,
+                //         dataType: "json",
+                        
+                // })
+                // .done(function(data) {
+                //     var result = "Parameters: ";
+                //     result += "<ul>"
+                //     for(var i in data){
+                //       result += "<li>" + data[i] + "</li>";
+                //     }
+                //     result += "</ul>";
+                //     $("#parameter_list").html(result);
+                // })
+                // .fail(function() {
+                //     var result = "Unable to fetch parameters";
+                //     $("#parameter_list").html(result);
+                //     console.log(result);
+                // });
+            }
+            $('#controller').change(function() {
+                var width = $(this).width();
+                var height = $(this).height();
+                var chosen = $("option:selected", this).text();
+                $(this).next(".ninja-input")
+                     .css({ "position":"absolute", "top": "10px", "margin-left":"5px","background-color":"white", "width": width - 25,"height": height - 5 })
+                     .toggleClass("hidden", chosen !== 'Other');
+                fetchParameters(getControllerValue());
+                if(chosen === "Other"){
+                    $(this).next(".ninja-input").focus();
+                }
+            });
+            $("#fetch").on('click', function (event) {
+                fetchData();
+            });
+            $(document).keypress(function (e) {
+                if (e.which == 13) {
+                    $("#fetch").click();
+                }
+            });
+            //Download button listener
+             $("#download").on('click', function (event) {
+                if(typeof json_data !== "undefined" && json_data !== null && json_data !== ""){
+                    var button = $(this);
+                    var fields = [];
+                    if(json_data && json_data != null && Array === json_data.constructor){
+                      fields = Object.keys(json_data[0]);
+                    }
+                    else{
+                        fields = Object.keys(json_data);
+                    }
+                    json2csv({ data: json_data, fields: fields }, function(err, csv) {
+                      if (err) console.log(err);
+                        var csvData = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+                        var link = document.createElement("a");    
+                        link.href = csvData;
+                        link.style = "visibility:hidden";
+                        link.download = "export-" + getControllerValue() + ".csv";
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    });
+                }
+            });   
+        });
+    </script>
+</body>
+</html>

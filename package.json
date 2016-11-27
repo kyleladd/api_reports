@@ -1,0 +1,16 @@
+{
+  "name": "api_reporter",
+  "version": "1.0.0",
+  "description": "API data reporter. Fetch from api into an html table or export into a .csv",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "npm install && browserify js/bundleme.js -o js/npm_bundle.js"
+  },
+  "dependencies": {
+    "browserify": "^13.0.0",
+    "json2csv": "^3.3.0",
+    "materialize-css": "^0.97.6"
+  },
+  "devDependencies": {}
+}
